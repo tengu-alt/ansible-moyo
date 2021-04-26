@@ -1,0 +1,9 @@
+---
+  - name: Install kvm and jinja2 cli
+    hosts: localhost
+    become: true
+    become_method: sudo
+
+    tasks:
+      - name: Installation of kvm, dependencies and packages
+        command: /home/pc6/ansible_playbooks/scripts/kvm.sh

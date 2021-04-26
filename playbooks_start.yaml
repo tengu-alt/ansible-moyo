@@ -1,0 +1,10 @@
+---
+  - name: Running playbooks
+    hosts: localhost
+    become: true
+    become_method: sudo
+    vars_files: vms.yaml
+
+    tasks:
+      - include: install_kvm_and_dependencies_playbook.yaml
+      - include: net_and_vm.yaml

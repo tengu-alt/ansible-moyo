@@ -1,0 +1,12 @@
+
+vm_location: "/home/pc6/kvm/"
+
+guests:
+  VM1:
+    mem: 2048
+    cpus: 1
+    disk_path: /home/pc6/kvm/
+    disk_size: 20
+    os_type: ubuntu20.04
+    cdrom_path: /home/pc6/kvm/iso/ubuntu-20.04.2-live-server-amd64.iso
+    network: host-bridge

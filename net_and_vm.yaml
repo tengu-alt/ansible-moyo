@@ -1,0 +1,54 @@
+---
+  - name: Create net and vm
+    hosts: localhost
+    become: true
+    become_method: sudo
+
+    vars:
+       interface: eno1
+       br_name: br0
+       ip: 192.168.8.106/24
+       gw: 192.168.8.1
+       br_ip: 192.168.8.144
+       ip_start: 192.168.8.135
+       ip_end: 192.168.8.147
+
+    tasks:
+      - name: Creating network
+        template:
+          src: /home/pc6/ansible_playbooks/templates/template-network.j2
+          dest: /etc/netplan/00-installer-config.yaml
+
+      - name: Creating xml
+        template:
+          src: /home/pc6/ansible_playbooks/templates/template_xml.j2
+          dest: /home/pc6/ansible_playbooks/xml/host-bridge.xml
+
+
+  - name: Create VMs
+    hosts: localhost
+    become: true
+    vars_files:
+      - vms.yaml
+
+    tasks:
+      - name: Get list of VMs
+        virt:
+          command: "list_vms"
+        register: vms
+
+      - name: Create VM
+        command: >
+                  virt-install --import --virt-type=kvm --name {{ item.key }}
+                  --memory {{ item.value.mem }} --vcpus {{ item.value.cpus }}
+                  --os-variant {{ item.value.os_type }} --hvm
+                  --cdrom={{ item.value.cdrom_path }} --network network={{ item.value.network }}
+                  --graphics vnc --disk path={{ item.value.disk_path }}/disk.qcow2,size={{ item.value.disk_size }},format=qcow2
+        when: item.key not in vms.list_vms
+        with_dict: "{{ guests }}"
+
+      - name: Start VM
+        virt:
+          name: "{{ item.key }}"
+          state: running
+        with_dict: "{{ guests }}"
