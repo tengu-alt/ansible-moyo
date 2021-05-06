@@ -1,6 +1,5 @@
 ---
   - name: Create net and vm
-    hosts: localhost
     become: true
     become_method: sudo
 
@@ -26,7 +25,6 @@
 
 
   - name: Create VMs
-    hosts: localhost
     become: true
     vars_files:
       - vms.yaml
